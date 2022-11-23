@@ -38,6 +38,7 @@ class ResidualEnvModel(torch.nn.Module):
         layers = []
         for i in range(1, len(arch)):
             layers.append(torch.nn.Linear(arch[i-1], arch[i]))
+            layers.append(torch.nn.Tanh())
         self.net = torch.nn.Sequential(*layers)
         self.inp_means = torch.nn.Parameter(
             torch.tensor(input_means, dtype=torch.float32),
