@@ -164,8 +164,9 @@ for i_episode in itertools.count(1):
                 real_data.push(state, action, reward, next_state, mask, 0)
         if safe_agent is not None:
             try:
-                s, a = safe_agent.report()
+                s, a, t = safe_agent.report()
                 print("Shield steps:", s, "  Neural steps:", a)
+                print("Average time:", t / (s + a))
                 safe_agent.reset_count()
             except Exception:
                 pass
@@ -287,9 +288,10 @@ for i_episode in itertools.count(1):
                     done = True
                 if done:
                     try:
-                        s, a = safe_agent.report()
+                        s, a, t = safe_agent.report()
                         print("Finished test episode:", s, "shield and", a,
                               "neural")
+                        print("Average time:", t / (s + a))
                         safe_agent.reset_count()
                     except Exception:
                         pass

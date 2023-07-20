@@ -4,6 +4,7 @@ from typing import Optional, List, Tuple
 import cvxopt
 import scipy
 import torch
+import time
 
 from .env_model import MARSModel
 from pytorch_soft_actor_critic.sac import SAC
@@ -293,22 +294,27 @@ class Shield:
         self.agent = unsafe_policy
         self.shield_times = 0
         self.agent_times = 0
+        self.total_time = 0.
 
     def __call__(self, state: np.ndarray, **kwargs) -> np.ndarray:
+        start = time.time()
         proposed_action = self.agent(state, **kwargs)
         if self.shield.unsafe(state, proposed_action):
             act = self.shield(state)
             self.shield_times += 1
             return act
         self.agent_times += 1
+        end = time.time()
+        self.total_time += end - start
         return proposed_action
 
     def report(self) -> Tuple[int, int]:
-        return self.shield_times, self.agent_times
+        return self.shield_times, self.agent_times, self.total_time
 
     def reset_count(self):
         self.shield_times = 0
         self.agent_times = 0
+        self.total_time = 0.
 
 
 class CSCShield:
